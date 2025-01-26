@@ -149,6 +149,54 @@ function dueDateAssignment(assignments) {
 let dueAssignments = dueDateAssignment(AssignmentGroup.assignments)
 console.log("These are the assignments that are already due: ", dueAssignments);
 
+// =================================================================================
+
+function lateSubmission(assignments, submissions) {
+  let scores = {};
+
+  assignments.forEach((assignment, index) => {
+    const submission = submissions[index]; // Pair each assignment with its submission
+
+    // Check if submission exists
+    if (!submission) {
+      console.log(`No submission found for assignment ${assignment.id}`);
+      return;
+    }
+
+    if (new Date(assignment.due_at) < new Date(submission.submitted_at)) {
+      // Late submission: deduct 10%
+      scores[assignment.id] = submission.score * 0.9;
+      console.log(
+        `Assignment ${assignment.id}: Late. Adjusted score: ${scores[assignment.id]}`
+      );
+    } else {
+      // On-time submission: full score
+      scores[assignment.id] = submission.score;
+      console.log(
+        `Assignment ${assignment.id}: On time. Score: ${scores[assignment.id]}`
+      );
+    }
+  });
+
+  // Return the scores object instead of a specific assignment
+  return scores;
+}
+
+// Example usage:
+const assignments = [
+  { id: 1, due_at: "2025-01-20T23:59:59Z" },
+  { id: 2, due_at: "2025-01-22T23:59:59Z" },
+];
+
+const submissions = [
+  { id: 1, submitted_at: "2025-01-21T12:00:00Z", score: 100 },
+  { id: 2, submitted_at: "2025-01-22T22:00:00Z", score: 95 },
+];
+
+const finalScores = lateSubmission(assignments, submissions);
+console.log(finalScores);
+
+  
 
 
 
