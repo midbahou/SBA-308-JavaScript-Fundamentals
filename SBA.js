@@ -105,32 +105,42 @@ try {
     
     
 // ========================================================================================================================
-  //* You should also account for potential errors in the data that your program receives. What if points_possible is 0? You cannot divide by zero. What if a value that you are expecting to be a number is instead a string? 
+//* You should also account for potential errors in the data that your program receives. What if points_possible is 0? You cannot divide by zero. What if a value that you are expecting to be a number is instead a string? 
 
- function assgPointNull (AssgGroup) {
+function assgPointNull (AssgGroup) {
   AssgGroup.assignments.forEach(assignment => {
     // Check if points_possible is 0
     if (assignment.points_possible === 0) {
       throw new Error (`Invalid Data! In AssignmentGroup, The Assignment ${assignment.id} has a possible points of 0!`)
+    } else if (!(Number(assignment.points_possible))){
+      throw new Error(`Invalid Data! In AssignmentGroup, The Assignment ${assignment.id} does not have a Number in the possible points!`)
     }
   });
-   // If no error is thrown, return success message
+  // If no error is thrown, return success message
   return "All assignments have valid points!";
- }
+}
 
- // Test the function
- try {
+// Test the function
+try {
   const AssignmentGroup = {
     assignments: [
       {id: 1, points_possible: 150},
-      {id: 2, points_possible: 0}, // This will trigger an error
+      {id: 2, points_possible: "zero"}, // This will trigger an error
+      {id: 3, points_possible: 0}, // This will trigger an error, but is not gonna show unless you comment line 128, or move it to the bottom.
     ],
   };
   let pointNull = assgPointNull(AssignmentGroup);
   console.log(pointNull); // Will not execute if an error is thrown
- } catch (e) {
+} catch (e) {
   console.error(e); // Log the error message
- }
+}
+
+
+// ========================================================================================================================
+//* 
+function name(params) {
+  
+}
 
 
 
