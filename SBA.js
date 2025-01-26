@@ -137,15 +137,27 @@ try {
 
 
 // ========================================================================================================================
-//* 
-function name(params) {
-  
+//* If an assignment is not yet due, do not include it in the results or the average. Additionally, if the learner’s submission is late (submitted_at is past due_at), deduct 10 percent of the total points possible from their score for that assignment.
+function dueDateAssignment(assignments) {
+  let todaysDate = new Date (); // 
+  console.log(todaysDate);
+
+  const validDueDates = assignments.filter(assignment => new Date(assignment.due_at) < todaysDate);
+  return validDueDates;
 }
 
+let dueAssignments = dueDateAssignment(AssignmentGroup.assignments)
+console.log("These are the assignments that are already due: ", dueAssignments);
 
 
 
 
+
+
+// switch (assignment.due_at){
+//   case (assignment.due_at >= todaysDate):
+
+// }
 function getLearnerData(course, ag, submissions) {
 
 
