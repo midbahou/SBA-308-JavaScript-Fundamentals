@@ -92,8 +92,11 @@ function assgGroupMismatch(AssgCourse, courseId){
     }
     return courseId.id
 }
+
+// Test the function
 try {
-    console.log(assgGroupMismatch({course_id: 123}, {id: 456}));
+  const groupMismatch = assgGroupMismatch({course_id: 123}, {id: 456});
+    console.log(groupMismatch);
 } catch (e) {
     console.error(e);
 }
@@ -104,7 +107,30 @@ try {
 // ========================================================================================================================
   //* You should also account for potential errors in the data that your program receives. What if points_possible is 0? You cannot divide by zero. What if a value that you are expecting to be a number is instead a string? 
 
+ function assgPointNull (AssgGroup) {
+  AssgGroup.assignments.forEach(assignment => {
+    // Check if points_possible is 0
+    if (assignment.points_possible === 0) {
+      throw new Error (`Invalid Data! In AssignmentGroup, The Assignment ${assignment.id} has a possible points of 0!`)
+    }
+  });
+   // If no error is thrown, return success message
+  return "All assignments have valid points!";
+ }
 
+ // Test the function
+ try {
+  const AssignmentGroup = {
+    assignments: [
+      {id: 1, points_possible: 150},
+      {id: 2, points_possible: 0}, // This will trigger an error
+    ],
+  };
+  let pointNull = assgPointNull(AssignmentGroup);
+  console.log(pointNull); // Will not execute if an error is thrown
+ } catch (e) {
+  console.error(e); // Log the error message
+ }
 
 
 
