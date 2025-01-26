@@ -74,29 +74,71 @@ const CourseInfo = {
         score: 140
       }
     }
-  ];
+];
   
-  function getLearnerData(course, ag, submissions) {
-    // here, we would process this data to achieve the desired result.
-    const result = [
-      {
-        id: 125,
-        avg: 0.985, // (47 + 150) / (50 + 150)
-        1: 0.94, // 47 / 50
-        2: 1.0 // 150 / 150
-      },
-      {
-        id: 132,
-        avg: 0.82, // (39 + 125) / (50 + 150)
-        1: 0.78, // 39 / 50
-        2: 0.833 // late: (140 - 15) / 150
-      }
-    ];
   
-    return result;
-  }
   
-  const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
+// ==========================================================================================================================
   
-  console.log(result);
+  //*TODO: Create a function named getLearnerData() that accepts these values as parameters, in the order listed: (CourseInfo, AssignmentGroup, [LearnerSubmission]), and returns the formatted result, which should be an array of objects as described above.
   
+// ========================================================================================================================
+  
+  //* If an AssignmentGroup does not belong to its course (mismatching course_id), your program should throw an error, letting the user know that the input was invalid. Similar data validation should occur elsewhere within the program.
+  
+function assgGroupMismatch(AssgCourse, courseId){
+    if (AssgCourse.course_id !== courseId.id) {
+        throw new Error(`Input Not valid! The AssignmentGroup ${AssgCourse.course_id} does not belong to the Course ${courseId.id}! Please Try Again!`)
+    }
+    return courseId.id
+}
+try {
+    console.log(assgGroupMismatch({course_id: 123}, {id: 456}));
+} catch (e) {
+    console.error(e);
+}
+// console.log(assgGroupMismatch(AssignmentGroup, CourseInfo));
+    
+    
+    
+// ========================================================================================================================
+  //* You should also account for potential errors in the data that your program receives. What if points_possible is 0? You cannot divide by zero. What if a value that you are expecting to be a number is instead a string? 
+
+
+
+
+
+
+
+function getLearnerData(course, ag, submissions) {
+
+
+
+
+
+
+}
+
+// const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
+
+// console.log(result);
+
+
+
+// here, we would process this data to achieve the desired result.
+// const result = [
+//   {
+//     id: 125,
+//     avg: 0.985, // (47 + 150) / (50 + 150)
+//     1: 0.94, // 47 / 50
+//     2: 1.0 // 150 / 150
+//   },
+//   {
+//     id: 132,
+//     avg: 0.82, // (39 + 125) / (50 + 150)
+//     1: 0.78, // 39 / 50
+//     2: 0.833 // late: (140 - 15) / 150
+//   }
+// ];
+
+// return result;
