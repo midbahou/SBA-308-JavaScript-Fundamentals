@@ -83,28 +83,29 @@ const CourseInfo = {
   //*TODO: Create a function named getLearnerData() that accepts these values as parameters, in the order listed: (CourseInfo, AssignmentGroup, [LearnerSubmission]), and returns the formatted result, which should be an array of objects as described above.
   
 // ========================================================================================================================
-  
-  //* If an AssignmentGroup does not belong to its course (mismatching course_id), your program should throw an error, letting the user know that the input was invalid. Similar data validation should occur elsewhere within the program.
-  
+//        ----------------------------------------------Step 1-----------------------------------------------------
+//* If an AssignmentGroup does not belong to its course (mismatching course_id), your program should throw an error, letting the user know that the input was invalid. Similar data validation should occur elsewhere within the program.
+
 function assgGroupMismatch(AssgCourse, courseId){
-    if (AssgCourse.course_id !== courseId.id) {
-        throw new Error(`Input Not valid! The AssignmentGroup ${AssgCourse.course_id} does not belong to the Course ${courseId.id}! Please Try Again!`)
-    }
-    return courseId.id
+  if (AssgCourse.course_id !== courseId.id) {
+    throw new Error(`Input Not valid! The AssignmentGroup ${AssgCourse.course_id} does not belong to the Course ${courseId.id}! Please Try Again!`)
+  }
+  return courseId.id
 }
 
 // Test the function
 try {
   const groupMismatch = assgGroupMismatch({course_id: 123}, {id: 456});
-    console.log(groupMismatch);
+  console.log(groupMismatch);
 } catch (e) {
-    console.error(e);
+  console.error(e);
 }
 // console.log(assgGroupMismatch(AssignmentGroup, CourseInfo));
-    
-    
-    
+
+
+
 // ========================================================================================================================
+//        ----------------------------------------------Step 2-----------------------------------------------------
 //* You should also account for potential errors in the data that your program receives. What if points_possible is 0? You cannot divide by zero. What if a value that you are expecting to be a number is instead a string? 
 
 function assgPointNull (AssgGroup) {
@@ -137,11 +138,12 @@ try {
 
 
 // ========================================================================================================================
+//        ----------------------------------------------Step 3-----------------------------------------------------
 //* If an assignment is not yet due, do not include it in the results or the average. Additionally, if the learner’s submission is late (submitted_at is past due_at), deduct 10 percent of the total points possible from their score for that assignment.
 function dueDateAssignment(assignments) {
   let todaysDate = new Date (); // 
   console.log(todaysDate);
-
+  
   const validDueDates = assignments.filter(assignment => new Date(assignment.due_at) < todaysDate);
   return validDueDates;
 }
@@ -149,20 +151,21 @@ function dueDateAssignment(assignments) {
 let dueAssignments = dueDateAssignment(AssignmentGroup.assignments)
 console.log("These are the assignments that are already due: ", dueAssignments);
 
-// =================================================================================
+// ==========================================================================================================================
+//        ----------------------------------------------Step 4-----------------------------------------------------
 
 function lateSubmission(assignments, submissions) {
   let scores = {};
-
+  
   assignments.forEach((assignment, index) => {
     const submission = submissions[index]; // Pair each assignment with its submission
-
+    
     // Check if submission exists
     if (!submission) {
       console.log(`No submission found for assignment ${assignment.id}`);
       return;
     }
-
+    
     if (new Date(assignment.due_at) < new Date(submission.submitted_at)) {
       // Late submission: deduct 10%
       scores[assignment.id] = submission.score * 0.9;
@@ -177,7 +180,7 @@ function lateSubmission(assignments, submissions) {
       );
     }
   });
-
+  
   // Return the scores object instead of a specific assignment
   return scores;
 }
@@ -196,15 +199,70 @@ const submissions = [
 const finalScores = lateSubmission(assignments, submissions);
 console.log(finalScores);
 
-  
+
+
+
+// ============================================================================================================================
+//        ----------------------------------------------Step 5-----------------------------------------------------
+//* Calculate Weighted Average: Use group_weight and points_possible to calculate a weighted average for all assignments.
+function calculateWeightedAverage(scores, assignmts){
+  let totalPoints = 0;
+  let weightedScore = 0;
+
+  for (let i = 0; i < assignmts.length; i++){
+    const assignment = assignmts[i];
+
+    // Skip this iteration if the score for the assignment is undefined
+    if (scores[assignment.id] === undefined) {
+      console.log(`Skipping assignment ${assignment.id} as no score is recorded.`);
+      continue;
+    }
+
+    // Stop the loop if a specific condition is met (e.g., totalPoints exceeds a threshold)
+    if (totalPoints > 1000) {
+      console.log("Total points exceeded the threshold. Breaking the Loop!");
+      break;
+    }
+
+    totalPoints += assignment.points_possible;
+    weightedScore += (scores[assignment.id] / 100) * assignment.points_possible;
+
+    console.log(
+      `Processed assignment ${assignment.id}: 
+      points_possible = ${assignment.points_possible}, 
+      weighted_score = ${weightedScore}`
+    );
+  }
+
+  const weightedAverage = (weightedScore / totalPoints) * 100;
+  console.log(`The Total-Weighted-Average is: ${weightedAverage}`);
+  return weightedAverage;
+}
+
+// Here is an example to test our code
+const scores = {
+  1: 85,
+  2:90,
+  3: undefined, // No score recorded
+  4:79,
+};
+
+const assignmts = [
+  {id: 1, points_possible: 100, group_weight: 0.3},
+  {id: 2, points_possible: 150, group_weight: 0.4},
+  {id: 3, points_possible: 200, group_weight: 0.3}, // No score recorded
+  {id: 4, points_possible: 50, group_weight: 0.2},
+];
+
+console.log(calculateWeightedAverage(scores, assignmts));
 
 
 
 
 
 // switch (assignment.due_at){
-//   case (assignment.due_at >= todaysDate):
-
+  //   case (assignment.due_at >= todaysDate):
+  
 // }
 function getLearnerData(course, ag, submissions) {
 
