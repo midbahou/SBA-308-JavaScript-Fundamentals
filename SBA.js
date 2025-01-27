@@ -206,27 +206,33 @@ console.log(finalScores);
 //        ----------------------------------------------Step 5-----------------------------------------------------
 //* Calculate Weighted Average: Use group_weight and points_possible to calculate a weighted average for all assignments.
 function calculateWeightedAverage(scores, assignmts){
+    // Initialize variables to store the total possible points and total weighted score
   let totalPoints = 0;
   let weightedScore = 0;
 
+    // Iterate over the assignments array
   for (let i = 0; i < assignmts.length; i++){
-    const assignment = assignmts[i];
+    const assignment = assignmts[i]; // Get the current assignment object
 
     // Skip this iteration if the score for the assignment is undefined
     if (scores[assignment.id] === undefined) {
       console.log(`Skipping assignment ${assignment.id} as no score is recorded.`);
-      continue;
+      continue; // Skip to the next assignment
     }
 
     // Stop the loop if a specific condition is met (e.g., totalPoints exceeds a threshold)
     if (totalPoints > 1000) {
       console.log("Total points exceeded the threshold. Breaking the Loop!");
-      break;
+      break; // Exit the loop
     }
 
+    // Add the assignment's possible points to the total points
     totalPoints += assignment.points_possible;
+
+    // Calculate the weighted score for the assignment and add it to the total weighted score  
     weightedScore += (scores[assignment.id] / 100) * assignment.points_possible;
 
+    // Log the current assignment's details for debugging
     console.log(
       `Processed assignment ${assignment.id}: 
       points_possible = ${assignment.points_possible}, 
@@ -234,26 +240,34 @@ function calculateWeightedAverage(scores, assignmts){
     );
   }
 
+  // Calculate the final weighted average as a percentage
   const weightedAverage = (weightedScore / totalPoints) * 100;
+
+  // Log the final weighted average
   console.log(`The Total-Weighted-Average is: ${weightedAverage}`);
+
+  // Return the weighted average
   return weightedAverage;
 }
 
 // Here is an example to test our code
+// An object containing scores for each assignment (keyed by assignment ID)
 const scores = {
-  1: 85,
-  2:90,
-  3: undefined, // No score recorded
-  4:79,
+  1: 85, // 85% scored on assignment 1
+  2:90, // 90% scored on assignment 2
+  3: undefined, // No score recorded for assignment 3
+  4:79, // 79% scored on assignment 4
 };
 
+// An array of assignments with their IDs, points possible, and group weights
 const assignmts = [
-  {id: 1, points_possible: 100, group_weight: 0.3},
-  {id: 2, points_possible: 150, group_weight: 0.4},
-  {id: 3, points_possible: 200, group_weight: 0.3}, // No score recorded
-  {id: 4, points_possible: 50, group_weight: 0.2},
+  {id: 1, points_possible: 100, group_weight: 0.3}, // Assignment 1
+  {id: 2, points_possible: 150, group_weight: 0.4}, // Assignment 2
+  {id: 3, points_possible: 200, group_weight: 0.3}, // Assignment 3: No score recorded
+  {id: 4, points_possible: 50, group_weight: 0.2}, // Assignment 4
 ];
 
+// Call the function with the example data
 console.log(calculateWeightedAverage(scores, assignmts));
 
 
