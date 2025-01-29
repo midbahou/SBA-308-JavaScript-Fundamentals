@@ -274,22 +274,133 @@ console.log(calculateWeightedAverage(scores, assignmts));
 
 
 
-// switch (assignment.due_at){
-  //   case (assignment.due_at >= todaysDate):
+
+
+function getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions) {
+  // Step 1: Check if the Assignment Group belongs to the correct Course
+  // If the course_id of the AssignmentGroup does not match CourseInfo.id, throw an error
+  try{
+    assgGroupMismatch(AssignmentGroup, CourseInfo);
+  }catch (error) {
+    console.log(error);
+    return; // Exit the function if validation fails
+  }
+
+  // Step 2: Validate Points in Assignments
+  // Ensure all assignments have valid points_possible values (non-zero and numeric)
+  try {
+    assgPointNull (AssignmentGroup);
+    console.log(AssignmentGroup);
+  } catch (error) {
+    console.log(error);
+    return; // Exit the function if validation fails
+  }
+
+  // Step 3: Filter Out Assignments Not Yet Due
+  // Keep only the assignments whose due dates have already passed, so we can calculate scores only for past assignments
+  const validAssignments = dueDateAssignment(AssignmentGroup.assignments); // Filter assignments based on due date
   
-// }
-function getLearnerData(course, ag, submissions) {
+  
+  // Step 4: Handle Late Submissions: Deduct 10% from scores for late submissions
+  // This step will calculate the final scores for each assignment after considering late submission penalties
+  const scores = lateSubmission(validAssignments, LearnerSubmissions);  // Calculate scores considering late penalties
 
 
+  // Step 5: Format the Result
+  // Result will contain assignment details, individual learner scores, and weighted averages for each assignment
+  let result = [];  // Initialize an empty array to hold the final results
 
+  // Extract unique learner IDs from the learner submissions
+  const learners = LearnerSubmissions.map(sub => sub.learner_id)  // Get all learner IDs
+    .filter((learner_id, index, self) => self.indexOf(learner_id) === index);  // Remove duplicate learner IDs
 
+  // Iterate through each unique learner to calculate their scores for each assignment
+  learners.forEach(learnerId => {
+    // Step 6: Create a map of scores for the current learner from their submissions
+    let learnerScores = LearnerSubmissions.filter(sub => sub.learner_id === learnerId)  // Filter submissions for this learner
+      .reduce((acc, sub) => {
+        acc[sub.assignment_id] = sub.submission.score;  // Map assignment IDs to scores
+        return acc;  // Return the accumulated object
+      }, {});  // Initialize the accumulator as an empty object
 
+    // Step 7: For each valid assignment, calculate the individual learner's score and apply the late penalty
+    validAssignments.forEach(assignment => {
+      // Initialize an object to store the scores for this assignment
+      const assignmentScores = {};  
+      let totalScore = 0;  // Initialize the total score for this assignment
+      let totalPoints = 0;  // Initialize the total possible points for the assignment
 
+      // Iterate through the learner submissions to get scores for this assignment
+      LearnerSubmissions.forEach(submission => {
+        if (submission.assignment_id === assignment.id) {  // If this submission is for the current assignment
+          let score = submission.submission.score;  // Get the original score
+          
+          // Apply late submission penalty if the submission is late
+          if (new Date(assignment.due_at) < new Date(submission.submission.submitted_at)) {
+            score *= 0.9;  // Deduct 10% for late submission
+          }
+
+          // Store the adjusted score for this learner in the assignmentScores object
+          assignmentScores[submission.learner_id] = score;
+
+          // Accumulate the total score and total possible points
+          totalScore += score;  
+          totalPoints += assignment.points_possible;  
+        }
+      });
+
+      // Step 8: Calculate the weighted average for the assignment
+      const weightedAverageForAssignment = (totalScore / totalPoints) * 100;  // Calculate weighted average for this assignment
+
+      // Push the assignment details along with the learner scores and weighted average to the result array
+      result.push({
+        id: assignment.id,  // Assignment ID
+        avg: Math.round(weightedAverageForAssignment),  // Round the weighted average for the assignment
+        ...assignmentScores  // Spread the assignmentScores object to include scores for each learner
+      });
+    });
+  });
+
+  // Return the final result containing all the assignment scores and weighted averages
+  return result;
 }
 
-// const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
+// Example call to the function with CourseInfo, AssignmentGroup, and LearnerSubmissions
+const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
 
-// console.log(result);
+// Log the final result for verification
+console.log(result);
+
+
+// Defining the test data for the course, assignment group, and submissions
+
+// Course Data: Contains information about the course
+const course = { id: 1, name: "Math 101" };
+
+// Assignment Group Data: Contains assignments under a specific group within the course
+const group = {
+  id: 1,
+  name: "Homework",
+  course_id: 1,
+  group_weight: 20,
+  assignments: [
+    { id: 1, name: "Assignment 1", due_at: "2025-01-01", points_possible: 100 },
+    { id: 2, name: "Assignment 2", due_at: "2025-02-01", points_possible: 50 }
+  ]
+};
+
+// Submissions Data: Contains submission details from learners for each assignment
+const learSubmissions = [
+  { learner_id: 1, assignment_id: 1, submission: { submitted_at: "2025-01-02", score: 90 } },
+  { learner_id: 1, assignment_id: 2, submission: { submitted_at: "2025-01-31", score: 40 } }
+];
+
+// Call the function `getLearnerData` with the course, assignment group, and learSubmissions as arguments
+// This function will process the data and return the learner scores and weighted averages
+const results = getLearnerData(course, group, learSubmissions);
+
+// Log the result for verification
+console.log(results);
 
 
 
